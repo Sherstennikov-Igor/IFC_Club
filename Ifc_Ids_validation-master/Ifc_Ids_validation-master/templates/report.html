@@ -1,0 +1,297 @@
+<html lang={{_lang}}>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="foobaro">
+    <title>{{name}}</title>
+    <link href="https://fonts.googleapis.com/css?family=Comfortaa|Inconsolata|Open+Sans&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green: #97cc64;
+            --light-green: #b6cca1;
+            --red: #fb5a3e;
+            --light-red: #fbb4a8;
+			--yellow: #FFFF00;
+			--p_yellow :#ffd37f
+        }
+        body { font-family: 'Arial', sans-serif; padding: 10px 40px; }
+        section { padding: 15px; border-radius: 5px; border: 1px solid #eee; margin-bottom: 15px; }
+        section>h2 { margin-top: 0px; }
+        span.time { color: #999; font-style: italic; float: right; }
+        span.step-time { float: right; color: #555; font-size: 0.8em; font-style: italic; }
+        span.item { padding: 5px; border-radius: 5px; margin-right: 5px; border: 1px solid #eee; }
+        span.item.pass, span.item.fail { color: #FFF; font-weight: bold; border: 0px; }
+		span.item.null_elems {color: #FFFF00; font-weight: bold; border: 5px; }
+        p.fail { background-color: #fb5a3e; padding: 5px; border-radius: 5px; color: #fff; }
+        p.unspecified { background-color: #994f00; padding: 5px; border-radius: 5px; color: #fff; }
+        p.skipped { background-color: #8b8d8f; padding: 5px; border-radius: 5px; color: #fff; }
+        p.description { background-color: #eee; border-radius: 5px; padding: 20px; margin-left: auto; margin-right: auto; display: inline-block; font-weight: bold;}
+        li { padding: 10px; font-family: monospace; }
+        li.pass { background-color: var(--light-green); color: #333; }
+        li.fail { background-color: var(--light-red); color: #900; }
+        li.unspecified { background-color: #ffd37f; color: #a30; }
+        li.skipped { background-color: #f5f5f5; color: #333; }
+        li p { margin-bottom: 0px; }
+        footer { color: #999; font-size: 0.8em; }
+        header { text-align: center; }
+        hr { margin: 20px; margin-left: 0px; margin-right: 0px;  border: none; border-top: 1px solid #ccc; }
+        <!-->summary { display: flex; cursor: pointer; }<!-->
+        <!-->summary::-webkit-details-marker { display: none; }<!-->
+        * {box-sizing:border-box}
+        .container { width: 100%; background-color: #ddd; border-radius: 5px}
+        .percent { text-align: left; padding-top: 5px; padding-left: 5px; padding-bottom: 5px; color: white; border-radius: 5px; white-space: nowrap; }
+        .pass { background-color: var(--green); }
+        .fail { background-color: var(--red); }
+		.null_elems { background-color: var(--p_yellow); }
+        table { width: 100%; border-bottom: 2px solid var(--red); border-spacing: 0; border-radius: 5px; margin-top: 10px; }
+        th, td { padding: 5px; }
+        thead>tr { background-color: var(--red); font-weight: bold; color: #fff; }
+        tbody tr { border-bottom: 1px solid var(--red); }
+        tbody tr:nth-child(odd) { background-color: rgba(1, 1, 1, 0.05); }
+        tbody tr:nth-child(even) { background-color: rgba(1, 1, 1, 0.1); }
+        tbody tr:hover { background-color: rgba(0, 0, 0, 0); }
+
+		.left_content {
+			position: fixed;
+			top: 0;
+			bottom: 0;
+			width: 350px;
+			<!-->resize: horizontal; Добавляет возможность расширять окно содержания<!-->
+			background: #fff;
+			border: 1px solid #C1C1C1;
+			overflow-y: scroll;
+		}
+		.main_box {
+			top: 0;
+			margin-left: 400px;
+		}
+
+		.content { 
+		}
+
+		.content__list {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding-inline-start: 20px;
+		margin-bottom: 40px;
+		}
+
+		.specification__element {
+		border: 2px solid lightgray;
+		border-radius: 4px;
+		}
+
+		.specification__summary {
+		cursor: pointer;
+		padding: 8px;
+		border-bottom: 1px solid lightgray;
+		}
+
+		.specification__summary:hover {
+		background-color: #eeeeee;
+		}
+
+		.specification__title {
+		display: inline;
+		}
+
+		.specification__content {
+		padding: 8px;
+		}
+		
+    </style>
+</head>
+<body>
+	<div class="left_content">
+		<nav style="margin-top: 10px;">
+			<h2 id="content" style="text-align:center;">Сводная таблица:</h2>
+			<table>
+				<tr>
+					<th style="border: 1px solid black">Наименование</th>
+					<th style="border: 1px solid black">% Выполнения</th>
+				</tr>
+				{{#specifications}}						
+					<tr style="{{#null_elems}}{{#status}}background-color: var(--light-green){{/status}}{{^status}}background-color: var(--light-red){{/status}}{{/null_elems}}{{^null_elems}}background-color: var(--p_yellow){{/null_elems}}">		
+						<td style="border: 1px solid black">
+							<a class="content__list-link" href="#{{name}}">
+								{{name}}
+							</a>
+						</td>
+						<td style="border: 1px solid black">
+							{{#total_applicable}}
+								{{percent_checks_pass}}%
+							{{/total_applicable}}
+							{{^total_applicable}}
+								Н/Д
+							{{/total_applicable}}
+						</td>
+					</tr>
+				{{/specifications}}
+			</table>
+		</nav>
+	</div>
+	<div class="main_box">
+		<header>
+			<h1>{{title}}</h1>
+			<p><strong>{{#filename}}{{filename}}<br />{{/filename}}{{date}}</strong></p>
+		</header>
+		<h2>Сводный отчёт</h2>
+		<div class="container">
+			<div class="{{#status}}pass{{/status}}{{^status}}fail{{/status}} percent" style="width: {{percent_checks_pass}}%;">{{percent_checks_pass}}%</div>
+		</div>
+		<p>
+			<span class="item {{#status}}pass{{/status}}{{^status}}fail{{/status}}">{{#status}}Пройдено{{/status}}{{^status}}Не пройдено{{/status}}</span>
+			<span class="item">
+				Наборов требований выполнено: <strong>{{total_specifications_pass}}</strong> / <strong>{{total_specifications}}</strong>
+			</span>
+			<span class="item">
+				Требований выполнено: <strong>{{total_requirements_pass}}</strong> / <strong>{{total_requirements}}</strong>
+			</span>
+			<span class="item">
+				Проверок выполнено: <strong>{{total_checks_pass}}</strong> / <strong>{{total_checks}}</strong>
+			</span>
+		</p>
+		
+		<hr>
+		{{#specifications}}
+		<section id="{{name}}">
+			<h2>{{name}}</h2>
+			{{#description}}
+			<p>{{description}}</p>
+			{{/description}}
+			{{#instructions}}
+			<p><em>{{instructions}}</em></p>
+			{{/instructions}}
+			
+			{{#null_elems}}
+				<div class="container">
+					<div class="{{#status}}pass{{/status}}{{^status}}fail{{/status}} percent" style="width: {{percent_checks_pass}}%;">
+						{{#total_applicable}}
+							{{percent_checks_pass}}%
+						{{/total_applicable}}
+						{{^total_applicable}}
+							Н/Д
+						{{/total_applicable}}
+					</div>
+				</div>
+				<p>
+					<span class="item {{#status}}pass{{/status}}{{^status}}fail{{/status}}">
+						{{#status}}Пройдено{{/status}}{{^status}}Не пройдено{{/status}}
+					</span>
+					<span class="item">
+						Элементов в выборке: <strong>{{total_applicable_pass}}</strong> / <strong>{{total_applicable}}</strong>
+					</span>
+					<span class="item">
+						Проверок выполнено: <strong>{{total_checks_pass}}</strong> / <strong>{{total_checks}}</strong>
+					</span>
+				</p>			
+			{{/null_elems}}
+
+			
+			{{^null_elems}}
+				<div class="container">
+					<div class="null_elems percent">
+						<span style="color: black;">Не обязательные элементы не найдены. Требования не проверялись.</span>
+					</div>
+				</div>
+			{{/null_elems}}
+			
+
+		<details class="specification__element">
+			<summary class="specification__summary">
+				<h3 class="specification__title">
+				  Подробнее
+				</h3>
+			</summary>
+
+			<p>
+				<strong>Контекст (выборка):</strong>
+			</p>
+			
+			<ul>
+				{{#applicability}}
+				<li>{{.}}</li>
+				{{/applicability}}
+			</ul>
+			
+			
+			<p>
+				<strong>Требования:</strong>
+			</p>
+			<ol>
+				{{#requirements}}
+				<li class="
+							{{#null_elems}}
+								{{#status}}pass{{/status}}{{^status}}fail{{/status}}
+							{{/null_elems}}
+							{{^null_elems}}
+								null_elems
+							{{/null_elems}}">
+					{{#total_fail}}
+						<details>
+							<summary>
+								{{description}}
+							</summary>
+							
+							<table>
+								<thead>
+									<tr>
+										<th>Класс</th>
+										<th>Предопреденный тип</th>
+										<th>Имя</th>
+										<th>Описание</th>
+										<th>Предупреждение</th>
+										<th>GlobalId</th>
+										<th>Tag</th>
+									</tr>
+								</thead>
+								<tbody>
+									{{#failed_entities}}
+									<tr>
+										<td>{{class}}</td>
+										<td>{{predefined_type}}</td>
+										<td>{{name}}</td>
+										<td>{{description}}</td>
+										<td>{{reason}}</td>
+										<td>{{global_id}}</td>
+										<td>{{tag}}</td>
+									</tr>
+									{{/failed_entities}}
+									{{#has_omitted}}
+									<tr>
+										<td colspan="7"> ... {{total_omitted}} элементов не отображено из {{total_entities}} всего ...</td>
+									</tr>
+									{{/has_omitted}}
+								</tbody>
+							</table>						
+						</details>
+						
+					{{/total_fail}}
+					{{^total_fail}}
+						{{#status}}
+							{{description}} - выполнено для всех элементов из выборки
+						{{/status}}
+						
+						{{^status}} 
+							{{description}}
+						{{/status}}						
+					{{/total_fail}}
+					
+				</li>
+				{{/requirements}}
+			</ol>
+	</details>
+
+		</section>
+		{{/specifications}}
+		<hr>
+		<footer>
+			<p>
+				Отчет сформирован с использованием библиотек <a href="http://ifcopenshell.org/">IfcOpenShell</a>.
+			</p>
+		</footer>
+	</div>
+</body>
+</html>
